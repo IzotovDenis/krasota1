@@ -8,23 +8,15 @@ class V1::UsersController <  V1Controller
         render json: {message: "profile"}
     end
 
-    def sign_up
-        @user = User.new(user_params)
-        if @user.save
-            command = AuthenticateUser.call(params[:user][:email], params[:user][:password])
-            render json: { auth_token: command.result }
-        else
-            render json: {errors: @user.errors}
+    def send_pin
+        user = User.where(:tel=>params[:tel]).first_or_create do |user|
+            user.tel = params[:tel]
         end
-    end
-
-    def sign_in 
-        command = AuthenticateUser.call(params[:email], params[:password]) 
-        if command.success? 
-            render json: { auth_token: command.result } 
-        else 
-            render json: { error: command.errors }, status: :unauthorized 
-        end 
+        if user.send_pin
+            render json: {success: true}
+        else
+            render json: {success: false}
+        end
     end
 
     private

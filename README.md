@@ -23,3 +23,7 @@ Things you may want to cover:
 
 * ...
 # krasota
+
+sudo apt-get install mysql-client libmysqlclient-dev
+
+create extension "intarray"

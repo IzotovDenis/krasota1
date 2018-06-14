@@ -31,6 +31,8 @@ gem 'cancancan'
 gem 'ancestry'
 gem 'foreman'
 gem 'sidekiq'
+gem 'mysql2',          '~> 0.3.18', :platform => :ruby
+gem 'thinking-sphinx', '~> 3.3.0'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

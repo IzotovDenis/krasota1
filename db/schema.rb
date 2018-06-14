@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180514062154) do
+ActiveRecord::Schema.define(version: 20180613023157) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "intarray"
 
   create_table "brands", force: :cascade do |t|
     t.string "title"

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   namespace :v1 do
+    get 'search', to: 'searches#index'
     resources :items do
       collection do
         get 'rand'
@@ -14,6 +15,7 @@ Rails.application.routes.draw do
     end
     resources :users do
       collection do
+        post 'send_pin' 
         post 'sign_in'
         post 'sign_up'
       end

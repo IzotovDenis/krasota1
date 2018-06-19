@@ -17,8 +17,8 @@ class V1::SearchesController <  V1Controller
       private    
       def set_options
         options = {}
-        options[:per_page] = 10
-        options[:page] = 1
+        options[:per_page] = 20
+        options[:page] = params[:page]
         options
       end
     
@@ -26,7 +26,7 @@ class V1::SearchesController <  V1Controller
       def set_options_ids
         options = set_options
         options[:page] = nil
-        options[:per_page] = 10
+        options[:per_page] = 300
         options
       end
 

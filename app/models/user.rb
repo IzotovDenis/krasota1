@@ -1,10 +1,12 @@
 class User < ApplicationRecord
-    validates :email, uniqueness: true
     validates :tel, uniqueness: true, presence: true
     has_many :orders
+    has_many :auth_tokens
     has_secure_password
 
     def send_pin
+        self.pin = 1234
+        save
         true
     end
 end

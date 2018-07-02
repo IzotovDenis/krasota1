@@ -1,5 +1,6 @@
 class V1::OrdersController <  V1Controller
-    before_action :set_order, :only => [:show, :sync, :set_formed]
+    before_action :set_order, :only => [:show, :set_formed]
+    before_action :set_sync_order, :only => [:sync]
     before_action :set_new_order, :only => [:create]
     before_action :set_active, only: [:getActive]
 
@@ -16,6 +17,14 @@ class V1::OrdersController <  V1Controller
     end
 
     def sync
+        orderItems = {}
+        orderItemsParams = params[:orderList]
+        orderItemsParams.keys.each do |itemId|
+            orderItems[itemId.to_i] = orderItemsParams[itemId].to_i
+        end
+        @order.items = orderItems
+        @order.save
+        render json: {order: @order.as_json}
     end
 
     def create
@@ -44,6 +53,14 @@ class V1::OrdersController <  V1Controller
     end
 
     private
+
+    def set_sync_order
+        if params[:id]
+            @order = Order.find(params[:id])  
+        else
+            @order = Order.create(user_id:5)
+        end
+    end
 
     def set_order
         @order = Order.find(params[:id])

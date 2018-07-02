@@ -10,11 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180613023157) do
+ActiveRecord::Schema.define(version: 20180629051344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "intarray"
+
+  create_table "auth_tokens", force: :cascade do |t|
+    t.string "val"
+    t.datetime "expire_at"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["val"], name: "index_auth_tokens_on_val"
+  end
 
   create_table "brands", force: :cascade do |t|
     t.string "title"
@@ -75,6 +84,8 @@ ActiveRecord::Schema.define(version: 20180613023157) do
     t.string "name"
     t.string "tel"
     t.boolean "created_from_1c", default: false
+    t.string "role", default: "user"
+    t.string "pin"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

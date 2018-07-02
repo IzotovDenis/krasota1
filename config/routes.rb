@@ -10,14 +10,17 @@ Rails.application.routes.draw do
     resources :orders do
       collection do
         post ':id/set_formed', to: 'orders#set_formed'
+        post 'sync', to: 'orders#sync'
         post 'getOrderItems'
       end
     end
     resources :users do
       collection do
-        post 'send_pin' 
+        post 'send_pin'
+        post 'check_pin' 
         post 'sign_in'
         post 'sign_up'
+        post 'init_user'
       end
     end
   end

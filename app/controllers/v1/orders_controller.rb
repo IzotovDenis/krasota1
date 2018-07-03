@@ -5,7 +5,7 @@ class V1::OrdersController <  V1Controller
     before_action :set_active, only: [:getActive]
 
     def index
-        render json: { orders: current_user.orders }
+        render json: { orders: current_user.orders.as_json }
     end
 
     def show
@@ -17,14 +17,15 @@ class V1::OrdersController <  V1Controller
     end
 
     def sync
+        order = Order.new(user: current_user)
         orderItems = {}
         orderItemsParams = params[:orderList]
         orderItemsParams.keys.each do |itemId|
             orderItems[itemId.to_i] = orderItemsParams[itemId].to_i
         end
-        @order.items = orderItems
-        @order.save
-        render json: {order: @order.as_json}
+        order.items = orderItems
+        order.save
+        render json: {order: order.as_json}
     end
 
     def create

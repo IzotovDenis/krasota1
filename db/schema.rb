@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180629051344) do
+ActiveRecord::Schema.define(version: 20180703042125) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,7 +60,15 @@ ActiveRecord::Schema.define(version: 20180629051344) do
     t.datetime "updated_at", null: false
     t.string "code"
     t.jsonb "image", default: {"exist"=>false}
+    t.integer "likes_counter", default: 0
     t.index ["uid"], name: "index_items_on_uid", unique: true
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.integer "item_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -86,6 +94,7 @@ ActiveRecord::Schema.define(version: 20180629051344) do
     t.boolean "created_from_1c", default: false
     t.string "role", default: "user"
     t.string "pin"
+    t.integer "likes_counter", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

@@ -23,6 +23,12 @@ Rails.application.routes.draw do
         post 'init_user'
       end
     end
+    resources :likes do
+      collection do
+        post 'set_like', to: 'likes#set_like'
+        post 'del_like', to: 'likes#del_like'
+      end
+    end
   end
 
   namespace :admin do

@@ -1,7 +1,7 @@
 class Item < ApplicationRecord
     has_many :likes, counter_cache: true
 
-    self.per_page = 10
+    self.per_page = 60
 
     def group
         Group.where(:uid=>self.group_uid).first

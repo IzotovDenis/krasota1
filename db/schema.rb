@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180703042125) do
+ActiveRecord::Schema.define(version: 20180717060118) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20180703042125) do
     t.datetime "received_at"
     t.boolean "formed", default: false
     t.datetime "formed_at"
+    t.text "comment"
   end
 
   create_table "users", force: :cascade do |t|
@@ -95,6 +96,8 @@ ActiveRecord::Schema.define(version: 20180703042125) do
     t.string "role", default: "user"
     t.string "pin"
     t.integer "likes_counter", default: 0
+    t.string "city"
+    t.text "comment"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

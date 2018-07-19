@@ -5,7 +5,7 @@ class V1::OrdersController <  V1Controller
     before_action :set_active, only: [:getActive]
 
     def index
-        render json: { orders: current_user.orders.as_json }
+        render json: { orders: current_user.orders.formed.select(:id, :items_count, :amount, :formed_at).as_json }
     end
 
     def show
@@ -21,11 +21,14 @@ class V1::OrdersController <  V1Controller
         orderItems = {}
         orderItemsParams = params[:orderList]
         orderItemsParams.keys.each do |itemId|
-            orderItems[itemId.to_i] = orderItemsParams[itemId].to_i
+            orderItems[itemId.to_i] = {"qty" => orderItemsParams[itemId].to_i}
         end
         order.items = orderItems
-        order.save
-        render json: {order: order.as_json}
+        if order.set_formed
+            render json: {order: order.as_json, success: true}
+        else
+            render json: {success: false, errors: order.errors}
+        end
     end
 
     def create

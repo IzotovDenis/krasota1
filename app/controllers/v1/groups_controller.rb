@@ -16,7 +16,6 @@ class V1::GroupsController <  V1Controller
     end
 
     def show
-
         currentPage = params[:page] || 1
         @items = @group.items.
         joins("LEFT OUTER JOIN likes ON (likes.item_id = items.id AND likes.user_id = #{current_user ? current_user.id : 0})").
@@ -24,7 +23,8 @@ class V1::GroupsController <  V1Controller
         items.title,
         items.price,
         items.image,
-        items.uid, 
+        items.uid,
+        items.likes_counter, 
         CASE coalesce(likes.id, 0) WHEN 0 THEN 'false'::boolean ELSE 'true' END AS user_like, 
         items.id").paginate(:page => currentPage)
         render json: {group: @group, items: @items, pageLoaded: currentPage.to_i}

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         post 'sign_in'
         post 'sign_up'
         post 'init_user'
+        post 'update_fields'
       end
     end
     resources :likes do

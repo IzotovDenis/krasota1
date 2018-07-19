@@ -3,7 +3,7 @@ class Order < ApplicationRecord
     belongs_to :user
     scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at)}
     scope :not_received, -> {where(received: false)}
-    scope :formed, -> {where(formed: true)}
+    scope :formed, -> {where(formed: true).order("formed_at DESC")}
 
     def set_received
         self.received = true

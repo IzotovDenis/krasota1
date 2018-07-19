@@ -1,4 +1,5 @@
 class V1::UsersController <  V1Controller
+    before_action :isAuth, :only => [:update_fields]
 
     def profile
         render json: {message: "profile"}
@@ -6,7 +7,7 @@ class V1::UsersController <  V1Controller
 
     def init_user
         if current_user
-            render json: {success: true, profile: current_user.slice(:email, :tel, :name, :role)}
+            render json: {success: true, profile: current_user.slice(:email, :tel, :name, :role, :city, :comment)}
         else
             render json: {success: false}
         end
@@ -14,6 +15,14 @@ class V1::UsersController <  V1Controller
 
     def get_pin
         render json: {message: "profile"}
+    end
+
+    def update_fields
+        if current_user.update(update_user_params)
+            render json: {success: true}
+        else
+            render json: {success: false, errors: current_user.errors}
+        end
     end
 
     def send_pin
@@ -43,8 +52,18 @@ class V1::UsersController <  V1Controller
 
     private
 
+    def update_user_params
+        params.require(:user).permit(:name, :city, :email, :comment)
+    end
+
     def user_params
         params.require(:user).permit(:email, :password, :password_confirmation)
+    end
+
+    def isAuth
+        if !current_user 
+            render json: {success: false, error: 'not auth'}
+        end
     end
     
 end

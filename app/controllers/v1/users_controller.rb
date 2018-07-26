@@ -26,25 +26,44 @@ class V1::UsersController <  V1Controller
     end
 
     def send_pin
-        user = User.where(:tel=>params[:tel]).first_or_create do |user|
-            user.tel = params[:tel]
-            user.password = '2212345678'
-            user.password_confirmation = '2212345678'
-        end
-        if user.send_pin
-            render json: {success: true}
+        recaptcha = GoogleRecaptcha.new
+        captcha = recaptcha.verify_recaptcha({response: params[:captcha]})
+        if captcha
+            tel = params[:tel].gsub(/[^\d]/, '')
+            password = rand.to_s[2..9]
+            user = User.where(:tel=>tel).first_or_create do |user|
+                user.tel = tel
+                user.password = password
+                user.password_confirmation = password
+            end
+            sms = Smsmessage.send_pin(tel)
+            if sms[:success]
+                render json: sms
+            else
+                render json: sms
+            end
         else
-            render json: {success: false}
+            render json: {success: false, error: 'invalid captcha'}
         end
+        # if user.send_pin
+        #     render json: {success: true}
+        # else
+        #     render json: {success: false}
+        # end
     end
 
     def check_pin
         tel = params[:tel].gsub(/[^\d]/, '')
         pin = params[:pin].gsub(/[^\d]/, '')
-        @user = User.where(:tel=>tel,:pin=>pin).select("id, name, tel").first
-        if @user
-            token = AuthCommands.generate_token(@user.id)
-            render json: {success: true, user: @user, token: token.val}
+        verifed = Smsmessage.verify_pin(tel, pin)
+        if verifed
+            @user = User.where(:tel=>tel).select("id, name, tel").first
+            if @user
+                token = AuthCommands.generate_token(@user.id)
+                render json: {success: true, user: @user, token: token.val}
+            else
+                render json: {success: false}
+            end
         else
             render json: {success: false}
         end

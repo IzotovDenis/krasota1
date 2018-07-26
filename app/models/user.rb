@@ -3,11 +3,16 @@ class User < ApplicationRecord
     has_many :orders
     has_many :auth_tokens
     has_many :likes, counter_cache: true
+    has_many :smsmessages
     has_secure_password
 
     def send_pin
-        self.pin = 1234
-        save
-        true
+        self.pin = rand.to_s[2..7]
+        self.save
+        if SMSCommands.send_pin(self.tel, self.pin)
+            return true
+        else
+            return false
+        end
     end
 end

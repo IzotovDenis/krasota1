@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180717060118) do
+ActiveRecord::Schema.define(version: 20180725022717) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,16 @@ ActiveRecord::Schema.define(version: 20180717060118) do
     t.boolean "formed", default: false
     t.datetime "formed_at"
     t.text "comment"
+  end
+
+  create_table "smsmessages", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "pin"
+    t.string "tel"
+    t.boolean "sended", default: false
+    t.boolean "used", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

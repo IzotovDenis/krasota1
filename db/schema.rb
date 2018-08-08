@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180725022717) do
+ActiveRecord::Schema.define(version: 20180801023532) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 20180725022717) do
     t.boolean "disabled", default: false
     t.string "display_name"
     t.integer "sort"
+    t.integer "columns_count", default: 1
     t.index ["uid"], name: "index_groups_on_uid", unique: true
   end
 

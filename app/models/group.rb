@@ -4,4 +4,5 @@ class Group < ApplicationRecord
     def items
         Item.where(:group_uid=>self.uid)
     end
+
 end

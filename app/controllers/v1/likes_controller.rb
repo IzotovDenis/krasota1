@@ -4,6 +4,7 @@ class V1::LikesController < V1Controller
         items = current_user.likes.joins(:item).select("items.title,
         items.price,
         items.image,
+        items.id,
         items.uid,
         items.likes_counter,
         'true' as user_like")

@@ -2,9 +2,9 @@ class V1::GroupsController <  V1Controller
     before_action :set_group, only: [:show]
 
     def index
-        @groups = Group.select("title, id, FALSE as has_children").all.index_by(&:id)
-        @sort = Group.select("ancestry, id, title, items_count, columns_count").arrange_serializable(:order=>:title) do |parent, children|
-            h = {id: parent.id, title: parent.title, items_count: parent.items_count, columns_count: parent.columns_count}
+        @groups = Group.where(:disabled=>false).select("title, id, FALSE as has_children").all.index_by(&:id)
+        @sort = Group.where(:disabled=>false).select("ancestry, id, title, items_count, columns_count, sort").arrange_serializable(:order=>:title) do |parent, children|
+            h = {id: parent.id, title: parent.title, items_count: parent.items_count, columns_count: parent.columns_count, sort: parent.sort}
             h[:children] = children
             h[:has_children] = false
             if children.length > 0

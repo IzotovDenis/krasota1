@@ -12,7 +12,7 @@ class Smsmessage < ApplicationRecord
     end
 
     def self.create_pin(tel)
-        pin = rand.to_s[2..7]
+        pin = Rails.env.development? ? "123456" : rand.to_s[2..7]
         if SMSCommands.send_pin(tel, pin)
             Smsmessage.create(:tel=>tel, :pin=>pin)
             return true

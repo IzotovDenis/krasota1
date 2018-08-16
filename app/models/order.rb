@@ -1,7 +1,7 @@
 class Order < ApplicationRecord
     attr_accessor :items_1c
     belongs_to :user
-    scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at)}
+    scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at, :info)}
     scope :not_received, -> {where(received: false)}
     scope :formed, -> {where(formed: true).order("formed_at DESC")}
 

@@ -19,11 +19,12 @@ class V1::OrdersController <  V1Controller
     def sync
         order = Order.new(user: current_user)
         orderItems = {}
-        orderItemsParams = params[:orderList]
+        orderItemsParams = params[:order][:orderList]
         orderItemsParams.keys.each do |itemId|
             orderItems[itemId.to_i] = {"qty" => orderItemsParams[itemId].to_i}
         end
         order.items = orderItems
+        order.info = params[:order][:info]
         if order.set_formed
             render json: {order: order.as_json, success: true}
         else

@@ -47,6 +47,8 @@ class Admin::OrdersController < AdminController
             items: @order.for_1c,
             amount: @order.amount,
             formed: @order.formed,
+            info: @order.info,
+            user: @order.user.slice(:id, :name, :tel, :email),
             formed_at: (@order.formed_at ? @order.formed_at.to_i : nil),
             received: @order.received,
             received_at: (@order.received_at ? @order.received_at.to_i : nil),

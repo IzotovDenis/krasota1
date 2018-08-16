@@ -20,6 +20,8 @@
 /config/deploy/
 /shared/
 /public/uploads/
+/public/uploads
+!*/uploads
 /public/sys/
 
 .byebug_history

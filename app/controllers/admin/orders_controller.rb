@@ -49,11 +49,11 @@ class Admin::OrdersController < AdminController
             formed: @order.formed,
             info: @order.info,
             user: @order.user.slice(:id, :name, :tel, :email),
-            formed_at: (@order.formed_at ? @order.formed_at.to_i : nil),
+            formed_at: (@order.formed_at ? @order.formed_at.strftime('%Y%M%d%H%M%S') : nil),
             received: @order.received,
-            received_at: (@order.received_at ? @order.received_at.to_i : nil),
+            received_at: (@order.received_at ? @order.received_at.strftime('%Y%M%d%H%M%S') : nil),
             items_count: @order.items_count,
-            created_at: @order.created_at.to_i
+            created_at: @order.created_at.strftime('%Y%M%d%H%M%S')
         }}
     end
 

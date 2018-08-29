@@ -42,7 +42,7 @@ class Order < ApplicationRecord
         hash = {}
         self.attributes.keys.each do |key|
             if self.attributes[key].class.to_s == 'ActiveSupport::TimeWithZone'
-                hash[key] = self.attributes[key].to_i
+                hash[key] = self.attributes[key].strftime('%Y%M%d%H%M%S')
             else
                 hash[key] = self.attributes[key]
             end

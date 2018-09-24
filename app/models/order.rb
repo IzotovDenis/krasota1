@@ -1,6 +1,7 @@
 class Order < ApplicationRecord
     attr_accessor :items_1c
     belongs_to :user
+    has_many :payments
     scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at, :info)}
     scope :not_received, -> {where(received: false)}
     scope :formed, -> {where(formed: true).order("formed_at DESC")}
@@ -38,6 +39,7 @@ class Order < ApplicationRecord
         items
     end
 
+
     def as_json
         hash = {}
         self.attributes.keys.each do |key|
@@ -49,5 +51,14 @@ class Order < ApplicationRecord
         end
         hash
     end
+
     
+    def pay
+        payment = Payment.create(:order=>self, :amount=>self.amount)
+        response = AlfaBankMerchant.registr(payment.order_id,payment.id, amount)
+        if response
+            payment.update(:merchant_order_id=> response['orderId'])
+        end
+    end
+
 end

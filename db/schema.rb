@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180801023532) do
+ActiveRecord::Schema.define(version: 20180924041805) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(version: 20180801023532) do
     t.string "code"
     t.jsonb "image", default: {"exist"=>false}
     t.integer "likes_counter", default: 0
+    t.text "description"
     t.index ["uid"], name: "index_items_on_uid", unique: true
   end
 
@@ -84,6 +85,17 @@ ActiveRecord::Schema.define(version: 20180801023532) do
     t.boolean "formed", default: false
     t.datetime "formed_at"
     t.text "comment"
+    t.jsonb "info"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.integer "order_id"
+    t.integer "amount"
+    t.string "merchant_order_id"
+    t.integer "status"
+    t.jsonb "info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "smsmessages", force: :cascade do |t|

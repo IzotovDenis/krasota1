@@ -15,7 +15,7 @@ class AlfaBankMerchant
             endpoint = 'https://web.rbsuat.com/ab/rest/register.do?'
             fields = {
                 'orderNumber': "test#{order_id.to_s}",
-                'amount': amount*100.to_s,
+                'amount': (amount*100).to_s,
                 'returnUrl': 'http://xn--25-6kca2czamjk.xn--p1ai/',
                 'failUrl': 'http://xn--25-6kca2czamjk.xn--p1ai/',
                 'expirationDate': date_valid.strftime("%Y-%m-%dT%H:%M:%S")

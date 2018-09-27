@@ -46,7 +46,7 @@ class Order < ApplicationRecord
         ordered_items = []
         items.each do |item|
             qty = self.items[item.id.to_s]["qty"].to_i
-            ordered_items.push({id: item.id, code: item.code ,title: item.title, price: item.price, qty: qty, image: item.image})
+            ordered_items.push({id: item.id, uid: item.uid, code: item.code ,title: item.title, price: item.price, qty: qty, image: item.image})
         end
         ordered_items
     end

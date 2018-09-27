@@ -10,14 +10,15 @@ class AlfaBankMerchant
         fields.map{|k,v| "#{k}=#{v}"}.join('&')
         end
 
-        def registr(order_id, order_number, amount)
+        def registr(order_id, amount, date_valid)
+            puts "date_valid"
             endpoint = 'https://web.rbsuat.com/ab/rest/register.do?'
             fields = {
-                'orderNumber': order_number.to_s,
-                'amount': amount.to_s,
-                'returnUrl': 'http://192.168.0.101:3000/v1/payments/success',
-                'failUrl': 'http://192.168.0.101:3000/v1/payments/fail',
-                'description': "order is #{order_id}"
+                'orderNumber': "test#{order_id.to_s}",
+                'amount': amount*100.to_s,
+                'returnUrl': 'http://xn--25-6kca2czamjk.xn--p1ai/',
+                'failUrl': 'http://xn--25-6kca2czamjk.xn--p1ai/',
+                'expirationDate': date_valid.strftime("%Y-%m-%dT%H:%M:%S")
             }
             params = AlfaBankMerchant.prepare_fields(fields)
             url = endpoint+params
@@ -30,12 +31,11 @@ class AlfaBankMerchant
                 end
                 result = JSON.parse(result.body)
                 if (result['errorCode'])
-                    error = true
+                    return result
                 else 
                     return result
                 end
             rescue
-                puts 'someError'
                 raise
                 error = true
             end

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         post ':id/set_formed', to: 'orders#set_formed'
         post 'sync', to: 'orders#sync'
         post 'getOrderItems'
+        post ':id/pay', to: 'orders#pay'
       end
     end
     resources :users do

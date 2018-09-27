@@ -1,5 +1,6 @@
 class Item < ApplicationRecord
     has_many :likes, counter_cache: true
+    scope :random, -> {order("RANDOM()").limit(12)}
 
     self.per_page = 60
 

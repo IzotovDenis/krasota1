@@ -10,8 +10,8 @@ class V1::ItemsController < V1Controller
     end
 
     def rand
-        @items = Item.order("RANDOM()").limit(10)
-        render json: {items: @items}
+        @items = Item.order("RANDOM()").limit(12)
+        render json: @items
     end
 
     def set_item

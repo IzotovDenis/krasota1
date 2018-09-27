@@ -1,7 +1,5 @@
 class V1::OrdersController <  V1Controller
-    before_action :set_order, :only => [:show, :set_formed]
-    before_action :set_sync_order, :only => [:sync]
-    before_action :set_new_order, :only => [:create]
+    before_action :set_order, :only => [:show, :set_formed, :pay]
     before_action :set_active, only: [:getActive]
 
     def index
@@ -10,13 +8,13 @@ class V1::OrdersController <  V1Controller
 
     def show
         if @order
-            render json: { order: @order}
+            render json: @order.full_order
         else
             render json: { err: 'not found' }
         end
     end
 
-    def sync
+    def create
         order = Order.new(user: current_user)
         orderItems = {}
         orderItemsParams = params[:order][:orderList]
@@ -32,40 +30,21 @@ class V1::OrdersController <  V1Controller
         end
     end
 
-    def create
-        if @order.save
-            render json: {success: true, order: @order}
-        else
-            render json: {success: false, errors: @errors}
-        end
-    end
-
-    def set_formed
-        if @order.set_formed
-            render json: {success: true}
-        else
-            render json: {success: false, errors: @order.errors}
-        end
-    end
-
-    def getActive
-        
-    end
-
     def getOrderItems
         @items = Item.where("id IN (?)", params[:items])
         render :json => {items: @items}
     end
 
-    private
-
-    def set_sync_order
-        if params[:id]
-            @order = Order.find(params[:id])  
+    def pay
+        if @order.pay
+            response = @order.pay
+            render :json => response
         else
-            @order = Order.create(user_id:5)
+            render :json => {errors: @order.errors}
         end
     end
+
+    private
 
     def set_order
         @order = Order.find(params[:id])

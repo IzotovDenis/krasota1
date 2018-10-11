@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181011030808) do
+ActiveRecord::Schema.define(version: 20181010231048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,7 +124,6 @@ ActiveRecord::Schema.define(version: 20181011030808) do
     t.integer "likes_counter", default: 0
     t.string "city"
     t.text "comment"
-    t.integer "discount", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

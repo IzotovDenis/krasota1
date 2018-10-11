@@ -6,6 +6,7 @@ class Payment < ApplicationRecord
         if response[:is_paid]
             order = self.order
             order.is_paid = true
+            order.payable = false
             order.save
         end
         response

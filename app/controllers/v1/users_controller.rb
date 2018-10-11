@@ -7,7 +7,7 @@ class V1::UsersController <  V1Controller
 
     def init_user
         if current_user
-            render json: {success: true, profile: current_user.slice(:email, :tel, :name, :role, :city, :comment)}
+            render json: {success: true, profile: current_user.slice(:email, :tel, :name, :role, :city, :comment, :firstname, :lastname, :thirdname, :zip_code, :city, :address)}
         else
             render json: {success: false}
         end
@@ -57,10 +57,10 @@ class V1::UsersController <  V1Controller
         pin = params[:pin].gsub(/[^\d]/, '')
         verifed = Smsmessage.verify_pin(tel, pin)
         if verifed
-            @user = User.where(:tel=>tel).select("id, name, tel").first
+            @user = User.where(:tel=>tel).select("id, name, tel, firstname, lastname, thirdname, zip_code, city, email, address").first
             if @user
                 token = AuthCommands.generate_token(@user.id)
-                render json: {success: true, user: @user, token: token.val}
+                render json: {success: true, profile: @user, token: token.val}
             else
                 render json: {success: false}
             end

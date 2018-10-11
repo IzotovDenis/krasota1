@@ -5,7 +5,12 @@ class V1::PaymentsController <  V1Controller
     end
 
     def success
-        render json: @payment.check
+        if @payment
+            @payment.check
+            redirect_to "#{Rails.application.secrets.front_end_host}/profile/orders/#{@payment.order_id}"
+        else
+            redirect_to Rails.application.secrets.front_end_host
+        end
     end
 
     def fail

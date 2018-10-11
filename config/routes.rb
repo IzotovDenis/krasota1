@@ -7,12 +7,14 @@ Rails.application.routes.draw do
       end
     end
     resources :groups
+    get 'payments/success', to: 'payments#success'
     resources :orders do
       collection do
         post ':id/set_formed', to: 'orders#set_formed'
         post 'sync', to: 'orders#sync'
         post 'getOrderItems'
         post ':id/pay', to: 'orders#pay'
+        post 'changeCount', to: 'orders#changeCount'
       end
     end
     resources :users do
@@ -46,5 +48,4 @@ Rails.application.routes.draw do
     resources :users
   end 
 
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

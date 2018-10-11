@@ -1,46 +1,48 @@
 class V1::OrdersController <  V1Controller
     before_action :set_order, :only => [:show, :set_formed, :pay]
     before_action :set_active, only: [:getActive]
+    before_action :prepare_order, only: [:getOrderItems, :create]
 
     def index
-        render json: { orders: current_user.orders.formed.select(:id, :items_count, :amount, :formed_at).as_json }
+        render json: { orders: current_user.orders.formed }
     end
 
     def show
         if @order
-            render json: @order.full_order
+            render json: @order
         else
             render json: { err: 'not found' }
         end
     end
 
     def create
-        order = Order.new(user: current_user)
-        orderItems = {}
-        orderItemsParams = params[:order][:orderList]
-        orderItemsParams.keys.each do |itemId|
-            orderItems[itemId.to_i] = {"qty" => orderItemsParams[itemId].to_i}
-        end
-        order.items = orderItems
-        order.info = params[:order][:info]
-        if order.set_formed
-            render json: {order: order.as_json, success: true}
+        @order.user = current_user
+        if @order.set_formed
+            render json: {order: @order, success: true}
         else
-            render json: {success: false, errors: order.errors}
+            render json: {success: false, errors: @order.errors}
         end
     end
 
     def getOrderItems
+        render :json => {user: @order.user, items: @order.avaiable_items, not_able: @order.unavaiable_items, amount: @order.pre_amount, valid: @order.is_valid? }
+    end
+
+    def changeCount
         @items = Item.where("id IN (?)", params[:items])
-        render :json => {items: @items}
+        able = {}
+        @items.each do |item|
+            able[item.id] = item.in_stock
+        end
+        render :json => {items: @items, able: able}
     end
 
     def pay
         if @order.pay
             response = @order.pay
-            render :json => response
+            render :json => {success: true, response: response }
         else
-            render :json => {errors: @order.errors}
+            render :json => {success: false, errors: @order.errors}
         end
     end
 
@@ -63,15 +65,8 @@ class V1::OrdersController <  V1Controller
         params[:order][:items]
     end
 
-    def set_new_order
-        @user = User.first
-        @order = Order.new(user_id: @user.id)
-        order_items.each do |item|
-            count = order_list[item.id.to_s]
-            @order.items[item.id] = {id: item.id, qty: count, uid: item.uid }
-            @order.amount += item.price*count
-            @order.items_count +=1
-        end
+    def prepare_order
+        @order = Order.new(:order_list=>params[:items], :info=>params[:info], :comment=>params[:comment], :rate=>current_rate)
     end
     
 end

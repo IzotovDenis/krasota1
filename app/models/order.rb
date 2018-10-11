@@ -1,5 +1,8 @@
 class Order < ApplicationRecord
     attr_accessor :items_1c
+    attr_accessor :order_list
+    attr_accessor :rate
+    after_initialize :set_items
     belongs_to :user
     has_one :payment
     scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at, :info)}
@@ -13,30 +16,49 @@ class Order < ApplicationRecord
     end
 
     def set_formed
-        order = {}
-        keys = self.items.keys
-        items = Item.where("id IN (?)", keys)
-        amount = 0
-        items.each do |item|
-            qty = self.items[item.id.to_s]["qty"].to_i
-            order[item.id] = {id: item.id, uid: item.uid, price: item.price, qty: qty}
-            amount += qty*item.price
-        end
-        self.items = order
-        self.amount = amount
-        self.items_count = items.count
         self.formed = true
         self.formed_at = DateTime.now
         self.save
     end
 
-    def for_1c
-        items = []
-        keys = self.items.keys
-        keys.each do |i|
-            items.push(self.items[i])
+    def avaiable_items
+        if self.order_list
+            ids = self.order_list.keys || []
+            @items = Item.where("id IN (?)", ids).where('in_stock > 0').with_stock.with_discount(self.rate)
+            @items.map {|item| item.in_stock.to_f >= self.order_list[item.id.to_s].to_f ? item.ordered=self.order_list[item.id.to_s] : item.ordered=item.in_stock; item.as_json }
+        else
+            []
         end
-        items
+    end
+
+    def pre_amount
+        amount = 0
+        self.avaiable_items.map {|item| amount+=item['ordered'].to_i*item['price'].to_i}
+        amount
+    end
+
+    def unavaiable_items
+        if self.order_list
+            ids = self.order_list.keys  || []
+            @items = Item.where("id IN (?)", ids).where('in_stock <= 0').with_stock
+        else
+            []
+        end
+    end
+
+    def is_valid?
+        self.avaiable_items.length > 0
+    end
+
+    def set_paid(time)
+        self.is_paid = true
+        self.paid_at = time
+        self.payable = false
+        save
+    end
+
+    def for_1c
+        self.items
     end
 
     def full_items
@@ -61,20 +83,6 @@ class Order < ApplicationRecord
         order['is_paid'] = false
         order
     end
-
-
-    def as_json
-        hash = {}
-        self.attributes.keys.each do |key|
-            if self.attributes[key].class.to_s == 'ActiveSupport::TimeWithZone'
-                hash[key] = self.attributes[key].strftime('%Y%M%d%H%M%S')
-            else
-                hash[key] = self.attributes[key]
-            end
-        end
-        hash
-    end
-
     
     def pay
         if self.formed
@@ -84,10 +92,11 @@ class Order < ApplicationRecord
             else
                 response = AlfaBankMerchant.registr(self.id, amount, self.formed_at+3.days)
                 logger.debug(response)
-                if response && response['orderId']
-                    payment = Payment.create(:order=>self, :amount=>self.amount, :merchant_order_id=>response['orderId'], :order_url=>response['formUrl'])
+                if response[:success]
+                    payment = Payment.create(:order=>self, :amount=>self.amount, :merchant_order_id=>response[:result]['orderId'], :order_url=>response[:result]['formUrl'])
                 else
-                    self.errors.add(:base, 'some error')
+                    self.errors.add(:payment, 'оплата по карте не доступна')
+                    return false
                 end
             end
         else
@@ -95,5 +104,17 @@ class Order < ApplicationRecord
             return false
         end
     end
+
+
+     def set_items
+        if self.new_record?
+            if !self.rate
+                self.rate = 1
+            end
+            self.items = self.avaiable_items
+            self.amount = self.pre_amount
+            self.items_count = self.items.count
+        end
+     end
 
 end

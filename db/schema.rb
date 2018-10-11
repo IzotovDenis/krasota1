@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180927063255) do
+ActiveRecord::Schema.define(version: 20181011030808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,8 +85,9 @@ ActiveRecord::Schema.define(version: 20180927063255) do
     t.boolean "formed", default: false
     t.datetime "formed_at"
     t.text "comment"
-    t.jsonb "info"
-    t.boolean "is_paid"
+    t.jsonb "info", default: {}
+    t.boolean "is_paid", default: false
+    t.boolean "payable", default: true
   end
 
   create_table "payments", force: :cascade do |t|
@@ -94,7 +95,7 @@ ActiveRecord::Schema.define(version: 20180927063255) do
     t.integer "amount"
     t.string "merchant_order_id"
     t.integer "status"
-    t.jsonb "info"
+    t.jsonb "info", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "order_url"
@@ -123,6 +124,7 @@ ActiveRecord::Schema.define(version: 20180927063255) do
     t.integer "likes_counter", default: 0
     t.string "city"
     t.text "comment"
+    t.integer "discount", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

@@ -44,18 +44,19 @@ class Admin::OrdersController < AdminController
     def show
         render json: {order: {
             id: @order.id,
-            items: @order.for_1c,
+            items: @order.items,
             amount: @order.amount,
             formed: @order.formed,
             info: @order.info,
             user: @order.user.slice(:id, :name, :tel, :email),
-            formed_at: (@order.formed_at ? @order.formed_at.strftime('%Y%M%d%H%M%S') : nil),
+            formed_at: (@order.formed_at ? @order.formed_at.strftime('%Y%m%d%H%M%S') : nil),
             received: @order.received,
-            received_at: (@order.received_at ? @order.received_at.strftime('%Y%M%d%H%M%S') : nil),
+            received_at: (@order.received_at ? @order.received_at.strftime('%Y%m%d%H%M%S') : nil),
             items_count: @order.items_count,
-            created_at: @order.created_at.strftime('%Y%M%d%H%M%S')
+            created_at: @order.created_at.strftime('%Y%m%d%H%M%S')
         }}
     end
+
 
     private
 

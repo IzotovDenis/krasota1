@@ -6,7 +6,7 @@ class Item < ApplicationRecord
     scope :random, -> {order("RANDOM()").limit(12)}
     default_scope  { select("items.id, items.title, CASE coalesce(in_stock, 0) WHEN 0 THEN 'false'::boolean ELSE 'true' END AS able, items.price, items.image, items.uid, items.discription") }
     scope :with_stock, -> { select("items.id, items.title, CASE coalesce(in_stock, 0) WHEN 0 THEN 'false'::boolean ELSE 'true' END AS able, items.price, items.image, items.uid, items.discription, items.in_stock, 0::int as ordered") }
-    scope :with_discount, -> (discount = 0) { select("price*#{discount} as price") } 
+    scope :with_discount, -> (discount = 0) { select("round(price::float*#{discount}) as price") } 
 
     self.per_page = 60
 

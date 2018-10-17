@@ -3,9 +3,9 @@ class Order < ApplicationRecord
     attr_accessor :order_list
     attr_accessor :rate
     after_initialize :set_items
+    before_save :update_received_modified
     belongs_to :user
     has_one :payment
-    scope :for_admin, -> {select(:id, :amount, :items_count, :user_id, :created_at, :formed, :formed_at, :received, :received_at, :info)}
     scope :not_received, -> {where(received: false)}
     scope :formed, -> {where(formed: true).order("formed_at DESC")}
 
@@ -105,7 +105,6 @@ class Order < ApplicationRecord
         end
     end
 
-
      def set_items
         if self.new_record?
             if !self.rate
@@ -115,6 +114,25 @@ class Order < ApplicationRecord
             self.amount = self.pre_amount
             self.items_count = self.items.count
         end
+     end
+
+
+    def created_at
+        attributes['created_at'].strftime('%Y%m%d%H%M%S') if attributes['created_at']
+    end
+
+    def formed_at
+        attributes['formed_at'].strftime('%Y%m%d%H%M%S') if attributes['formed_at']
+    end
+
+    def received_at
+        attributes['received_at'].strftime('%Y%m%d%H%M%S') if attributes['received_at']
+    end
+
+     private       # <--- at bottom of model
+
+     def update_received_modified
+       self.received_at = Time.now if received_changed?
      end
 
 end

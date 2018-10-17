@@ -63,7 +63,6 @@ RSpec.describe V1::OrdersController, type: :controller do
     token = create(:auth_token, :user=>user)
     get :create, params: { items: @order_list, token: token.val }
     json = JSON.parse(response.body)
-    puts json
     expect(json['success']).to eq(true)
   end
 

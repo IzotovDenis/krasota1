@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181010231048) do
+ActiveRecord::Schema.define(version: 20181017045942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 20181010231048) do
   create_table "items", force: :cascade do |t|
     t.string "title"
     t.string "uid"
-    t.float "price"
+    t.integer "price"
     t.float "in_stock"
     t.text "discription"
     t.string "group_uid"
@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 20181010231048) do
     t.jsonb "info", default: {}
     t.boolean "is_paid", default: false
     t.boolean "payable", default: true
+    t.datetime "paid_at"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -124,6 +125,7 @@ ActiveRecord::Schema.define(version: 20181010231048) do
     t.integer "likes_counter", default: 0
     t.string "city"
     t.text "comment"
+    t.integer "discount", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

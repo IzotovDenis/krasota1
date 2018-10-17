@@ -1,31 +1,26 @@
 class Admin::OrdersController < AdminController
-    before_action :set_order, only: [:set_received, :show]
+    before_action :set_order, only: [:set_received, :show, :update]
 
     def index
-        @orders = Order.for_admin.formed
-        render json: {orders: @orders.as_json}
-    end
-
-    def not_received
-        @orders = Order.for_admin.formed.not_received
-        render json: {orders: @orders.as_json}
-    end
-
-    def set_received
-        if @order.set_received
-            render json: {success: true}
-        else
-            render json: {success: false, errors: @order.errors}
+        @orders = Order.where(query_params)
+        if params[:created_at_more]
+            time = DateTime.strptime(params[:created_at_more], '%Y%m%d%H%M%S').change(:offset=>"+1000")
+            @orders = @orders.where('created_at > ?', time)
         end
+        render json: {orders: @orders.as_json(
+            only: [:id, :is_paid, :received, :received_at, :amount], 
+            include: [user: {only: [:id]}]
+            )}
     end
 
-    def set_confirmed
-        if @order.set_confirmed
+    def update
+        if @order.update(order_params)
             render json: {success: true, order: @order.as_json}
         else
-            render json: {success: false, errors: @order.errors}
+            render json: {success:false, errors: @order.errors}
         end
     end
+
 
     def create_rand
         items = Item.where("price > ?", 12).limit(10).order("RANDOM()")
@@ -40,28 +35,25 @@ class Admin::OrdersController < AdminController
         render json: {order: @order.as_json}
     end
 
-
     def show
-        render json: {order: {
-            id: @order.id,
-            items: @order.items,
-            amount: @order.amount,
-            formed: @order.formed,
-            info: @order.info,
-            user: @order.user.slice(:id, :name, :tel, :email),
-            formed_at: (@order.formed_at ? @order.formed_at.strftime('%Y%m%d%H%M%S') : nil),
-            received: @order.received,
-            received_at: (@order.received_at ? @order.received_at.strftime('%Y%m%d%H%M%S') : nil),
-            items_count: @order.items_count,
-            created_at: @order.created_at.strftime('%Y%m%d%H%M%S')
-        }}
+        render json: {order: @order.as_json(
+            include: [user: {only: [:id, :name, :tel]}]
+            )}
     end
 
 
     private
 
+    def query_params
+        params.permit(:payable, :received, :formed, :is_paid, :formed_at, :received_at, :user_id,)
+    end
+
     def set_order
         @order = Order.find(params[:id])
+    end
+
+    def order_params
+        params.require(:order).permit(:received, :is_paid, :payable)
     end
 
 end

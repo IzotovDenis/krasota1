@@ -29,7 +29,6 @@ FactoryBot.define do
       formed {true}
       formed_at {"2018-10-04 03:15:38"}
       comment {nil}
-      is_paid {nil}
       info { {"firstname" => 'ivan', "lastname" => 'ivanov', "thirdname"=> 'ivanovich', "city" => 'ussuriisk'}}
     end
 

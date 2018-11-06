@@ -18,8 +18,8 @@ class AlfaBankMerchant
             endpoint = 'https://web.rbsuat.com/ab/rest/register.do?'
             fields = {
                 'orderNumber': "test213#{order_id.to_s}",
-                'amount': (amount*100).to_s,
-                'expirationDate': date_valid.strftime("%Y-%m-%dT%H:%M:%S")
+                'amount': amount.to_s,
+                'expirationDate': (date_valid-7.hours).strftime("%Y-%m-%dT%H:%M:%S")
             }
 
             params = AlfaBankMerchant.prepare_fields(fields)
@@ -49,33 +49,6 @@ class AlfaBankMerchant
         end
 
         def deposit(merchant_order_id)
-            endpoint = 'https://web.rbsuat.com/ab/rest/getOrderStatus.do?'
-            fields = {
-                'orderId': merchant_order_id,
-            }
-            params = AlfaBankMerchant.prepare_fields(fields)
-            url = endpoint+params
-            uri = URI(url)
-            begin 
-                result = Net::HTTP.start(uri.host, uri.port,
-                :use_ssl => uri.scheme == 'https') do |http|
-                request = Net::HTTP::Get.new uri
-                response = http.request request # Net::HTTPResponse object
-                end
-                result = JSON.parse(result.body)
-                if (result['errorCode'])
-                    return {success: false, errorCode: result['errorCode'], result: result }
-                else 
-                    return result
-                end
-            rescue
-                raise
-                error = true
-                return {success: false}
-            end
-        end
-
-        def deposit1(merchant_order_id)
             endpoint = 'https://web.rbsuat.com/ab/rest/getOrderStatusExtended.do?'
             fields = {
                 'orderId': merchant_order_id,
@@ -103,7 +76,7 @@ class AlfaBankMerchant
         end
 
         def check_payment(merchant_order_id)
-            result = deposit1(merchant_order_id)
+            result = deposit(merchant_order_id)
             if result[:success]
                 response = prepare_answer(result)
             else
@@ -118,6 +91,7 @@ class AlfaBankMerchant
                 begin
                 response[:is_paid] = true
                 response[:paid_at] = DateTime.strptime(result[:result]["authDateTime"].to_s,'%Q').change(:offset=>"+1000")+10.hours
+                response[:result] = result[:result]
                 rescue
                 response[:is_paid] = false
                 response[:error] = true

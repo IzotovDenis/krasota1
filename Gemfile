@@ -30,7 +30,6 @@ gem 'simple_command'
 gem 'will_paginate'
 gem 'cancancan'
 gem 'ancestry'
-gem 'foreman'
 gem 'sidekiq'
 gem 'mysql2',          '~> 0.3.18', :platform => :ruby
 gem 'thinking-sphinx', '~> 3.3.0'
@@ -38,8 +37,8 @@ gem 'thinking-sphinx', '~> 3.3.0'
 # gem 'capistrano-rails', group: :development
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem 'rack-cors'
-gem 'mini_magick'
+  gem 'rack-cors'
+  gem 'mini_magick'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

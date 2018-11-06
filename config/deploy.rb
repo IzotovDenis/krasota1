@@ -71,7 +71,6 @@ namespace :deploy do
       upload!('shared/database.yml', "#{shared_path}/config/database.yml")
       upload!('shared/secrets.yml', "#{shared_path}/config/secrets.yml")
       upload!('shared/application.yml', "#{shared_path}/config/application.yml")
-      upload!('shared/Procfile', "#{shared_path}/Procfile")
       upload!('shared/nginx.conf', "#{shared_path}/nginx.conf")
       sudo 'service nginx stop'
       sudo "rm -f /etc/nginx/sites-enabled/default"
@@ -93,8 +92,6 @@ namespace :deploy do
       execute "ln -s #{shared_path}/config/database.yml #{release_path}/config/database.yml"
       execute "ln -s #{shared_path}/config/application.yml #{release_path}/config/application.yml"
       execute "ln -s #{shared_path}/config/secrets.yml #{release_path}/config/secrets.yml"
-      execute "ln -s #{shared_path}/Procfile #{release_path}/Procfile"
-      execute "ln -s #{shared_path}/sys #{release_path}/public/sys"
       execute "ln -s /home/deployer/uploads #{release_path}/public/uploads"
       execute "ln -s /home/deployer/imports #{release_path}/imports"
       execute "ln -s /home/deployer/apps/#{application}/run #{release_path}/run"

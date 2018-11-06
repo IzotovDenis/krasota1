@@ -2,20 +2,23 @@ class Admin::OrdersController < AdminController
     before_action :set_order, only: [:set_received, :show, :update]
 
     def index
-        @orders = Order.where(query_params)
         if params[:created_at_more]
             time = DateTime.strptime(params[:created_at_more], '%Y%m%d%H%M%S').change(:offset=>"+1000")
             @orders = @orders.where('created_at > ?', time)
         end
-        render json: {orders: @orders.as_json(
-            only: [:id, :is_paid, :received, :received_at, :amount], 
-            include: [user: {only: [:id]}]
-            )}
+        if params[:paid_at_more]
+            time = DateTime.strptime(params[:paid_at_more], '%Y%m%d%H%M%S').change(:offset=>"+1000")
+            @orders = @orders.where('paid_at > ?', time)
+        end
+        @orders = Order.where(query_params).map do |order|
+            order.for_1c
+        end
+        render json: {orders: @orders}
     end
 
     def update
         if @order.update(order_params)
-            render json: {success: true, order: @order.as_json}
+            render json: {success: true, order: @order.for_1c}
         else
             render json: {success:false, errors: @order.errors}
         end
@@ -36,9 +39,7 @@ class Admin::OrdersController < AdminController
     end
 
     def show
-        render json: {order: @order.as_json(
-            include: [user: {only: [:id, :name, :tel]}]
-            )}
+        render json: {order: @order.for_1c}
     end
 
 

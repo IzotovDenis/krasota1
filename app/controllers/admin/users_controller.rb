@@ -3,18 +3,28 @@ class Admin::UsersController < AdminController
         render json: {success: false, error:'user not fount'}, :status => 404 # nothing, redirect or a template
     end
 
-    before_action :set_user, only: [:show]
+    before_action :set_user, only: [:show, :update]
 
     def index
-        @users = User.select(:id, :name, :email, :created_from_1c, :tel)
+        @users = User.all.map do |user|
+            user.for_1c
+        end
         render json: {users: @users}
     end
 
     def show
         if @user
-            render json: {user: @user}
+            render json: {user: @user.for_1c}
         else
             render json: {user: null}
+        end
+    end
+
+    def update
+        if @user.update(user_params)
+            render json: {user: @user.for_1c}
+        else
+            render json: {user: null, errors: @user.errors}
         end
     end
 
@@ -24,20 +34,20 @@ class Admin::UsersController < AdminController
         @user.password_confirmation = '123456'
         @user.created_from_1c = true
         if @user.save
-            render json: {success: true, user: @user.slice(:id, :email, :name, :tel, :created_from_1c)}
+            render json: {success: true, user: @user.for_1c}
         else
-            render json: {success: false, errors: @user.errors}
+            render json: {success: false, errors: @user.errors}, status: 422
         end
     end
 
     private
 
     def set_user
-        @user = User.select(:id, :tel, :email, :name).find(params[:id])
+        @user = User.find(params[:id])
     end
 
     def user_params
-        params.require(:user).permit(:name, :tel, :email)
+        params.require(:user).permit(:name, :tel, :email, :firstname, :lastname, :thirdname, :discount, :zip_code, :address, :city)
     end
 
     def auto_password

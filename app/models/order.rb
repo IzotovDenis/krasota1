@@ -2,6 +2,9 @@ class Order < ApplicationRecord
     attr_accessor :items_1c
     attr_accessor :order_list
     attr_accessor :rate
+    attr_accessor :created_at_1c
+    attr_accessor :formed_at_1c
+    attr_accessor :received_at_1c
     after_initialize :set_items
     before_save :update_received_modified
     belongs_to :user
@@ -58,7 +61,15 @@ class Order < ApplicationRecord
     end
 
     def for_1c
-        self.items
+        json = self.as_json(
+            include: [user: {only: [:id]}]
+            )
+        self.attributes.keys.each do |attribute|
+            if self[attribute].class == ActiveSupport::TimeWithZone
+                json[attribute] = self[attribute].strftime('%Y%m%d%H%M%S')
+            end
+        end
+        json
     end
 
     def full_items
@@ -117,16 +128,9 @@ class Order < ApplicationRecord
      end
 
 
-    def created_at
-        attributes['created_at'].strftime('%Y%m%d%H%M%S') if attributes['created_at']
-    end
 
-    def formed_at
-        attributes['formed_at'].strftime('%Y%m%d%H%M%S') if attributes['formed_at']
-    end
-
-    def received_at
-        attributes['received_at'].strftime('%Y%m%d%H%M%S') if attributes['received_at']
+    def created_at_1c
+        self.created_at = Time.now.strftime('%Y%m%d%H%M%S')
     end
 
      private       # <--- at bottom of model

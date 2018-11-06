@@ -17,7 +17,7 @@ class V1::UsersController <  V1Controller
         render json: {message: "profile"}
     end
 
-    def update_fields
+    def update
         if current_user.update(update_user_params)
             render json: {success: true}
         else

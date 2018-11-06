@@ -4,10 +4,9 @@ class Payment < ApplicationRecord
     def check
         response = AlfaBankMerchant.check_payment(self.merchant_order_id)
         if response[:is_paid]
-            order = self.order
-            order.is_paid = true
-            order.payable = false
-            order.save
+            self.info = response[:result]
+            self.save
+            self.order.set_paid(response[:paid_at])
         end
         response
     end

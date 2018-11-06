@@ -126,6 +126,11 @@ ActiveRecord::Schema.define(version: 20181017045942) do
     t.string "city"
     t.text "comment"
     t.integer "discount", default: 0
+    t.string "firstname"
+    t.string "lastname"
+    t.string "thirdname"
+    t.string "zip_code"
+    t.text "address"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["tel"], name: "index_users_on_tel", unique: true
   end

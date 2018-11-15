@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181017045942) do
+ActiveRecord::Schema.define(version: 20181115005400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,13 @@ ActiveRecord::Schema.define(version: 20181017045942) do
     t.integer "sort"
     t.integer "columns_count", default: 1
     t.index ["uid"], name: "index_groups_on_uid", unique: true
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.string "image"
+    t.string "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "items", force: :cascade do |t|
@@ -89,6 +96,16 @@ ActiveRecord::Schema.define(version: 20181017045942) do
     t.boolean "is_paid", default: false
     t.boolean "payable", default: true
     t.datetime "paid_at"
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.text "html"
+    t.string "link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["link"], name: "index_pages_on_link", unique: true
   end
 
   create_table "payments", force: :cascade do |t|

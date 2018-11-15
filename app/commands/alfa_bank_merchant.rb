@@ -12,29 +12,47 @@ class AlfaBankMerchant
         fields.map{|k,v| "#{k}=#{v}"}.join('&')
         end
 
+        def prep(fields = {})
+            a = Order.last.bundle
+            fields['userName'] = Rails.application.secrets.alfa_user_name
+            fields['password'] = Rails.application.secrets.alfa_password
+            fields['returnUrl'] = Rails.application.secrets.alfa_return_url
+            fields['failUrl'] = Rails.application.secrets.alfa_fail_url
+            fields['orderBundle'] = a.to_json
+            fields.map{|k,v| "#{k}=#{v}"}.join('&')
+        end
 
+        def reg
+            params = AlfaBankMerchant.prep
+            host = "web.rbsuat.com"
+            uri = 'https://web.rbsuat.com/ab/rest/register.do?'+params
+             result = Net::HTTP.start(host, :use_ssl => true) do |http|
+             request = Net::HTTP::Get.new URI.encode(uri)
+             response = http.request request
+             end
+            result
+        end
 
-        def registr(order_id, amount, date_valid)
+        def registr(order)
             endpoint = 'https://web.rbsuat.com/ab/rest/register.do?'
             fields = {
-                'orderNumber': "test213#{order_id.to_s}",
-                'amount': amount.to_s,
-                'expirationDate': (date_valid-7.hours).strftime("%Y-%m-%dT%H:%M:%S")
+                'orderNumber': "test25532#{order.id.to_s}",
+                'amount': order.amount,
+                'expirationDate': (order.created_at+3.days).strftime("%Y-%m-%dT%H:%M:%S"),
+                'orderBundle': order.bundle.to_json
             }
-
             params = AlfaBankMerchant.prepare_fields(fields)
             url = endpoint+params
-            uri = URI(url)
-            request(uri)
+            puts (url)
+            request(url)
         end
 
         def request(uri)
             begin 
-                Rails.logger.debug(uri)
-                result = Net::HTTP.start(uri.host, uri.port,
-                :use_ssl => uri.scheme == 'https') do |http|
-                request = Net::HTTP::Get.new uri
-                response = http.request request
+                host = "web.rbsuat.com"
+                result = Net::HTTP.start(host, :use_ssl => true) do |http|
+                request = Net::HTTP::Get.new URI.encode(uri)
+                response = http.request(request)
                 end
                 result = JSON.parse(result.body)
                 if (result['errorCode'] != nil )

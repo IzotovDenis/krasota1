@@ -34,6 +34,31 @@ class Order < ApplicationRecord
         end
     end
 
+    def bundle
+        bundle = {}
+        bundle["cartItems"] = {"items":self.bundleItems}
+        bundle["customerDetails"] = { 
+            "email": self.info["email"],
+            "phone": self.info["tel"]}
+        bundle
+    end
+
+    def bundleItems
+        result = []
+        self.items.each_with_index do | item, index |
+            res_item = { "positionId": index+1, 
+            "name": item["title"],
+            "itemCode": item["code"], 
+            "quantity": { "value": item["ordered"], "measure": "штук" },
+            "tax": {"taxType": 0,"taxSum": 0}, 
+            "itemPrice": item["price"] 
+            }
+            result.push(res_item)
+        end
+        result
+    end
+
+
     def pre_amount
         amount = 0
         self.avaiable_items.map {|item| amount+=item['ordered'].to_i*item['price'].to_i}
@@ -101,7 +126,7 @@ class Order < ApplicationRecord
             if payment
                 return payment
             else
-                response = AlfaBankMerchant.registr(self.id, amount, self.formed_at+3.days)
+                response = AlfaBankMerchant.registr(self)
                 logger.debug(response)
                 if response[:success]
                     payment = Payment.create(:order=>self, :amount=>self.amount, :merchant_order_id=>response[:result]['orderId'], :order_url=>response[:result]['formUrl'])

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     end
     resources :groups
     get 'payments/success', to: 'payments#success'
+    get 'pages/:pageLink', to: 'pages#show'
     resources :orders do
       collection do
         post ':id/set_formed', to: 'orders#set_formed'
@@ -36,6 +37,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :pages
     resources :orders do
       collection do
         post 'getOrderItems'
